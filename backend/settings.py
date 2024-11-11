@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'users',
     'scooters',
     'reservations',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
