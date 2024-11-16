@@ -6,12 +6,16 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
+        """
+        Creates a user with the provided data and automatically creates and attaches a UserProfile to the user.
+        """
         if not email:
             raise ValueError(_('You must have an email address'))
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
+        UserProfile.objects.create(user=user)
         return user
 
 
@@ -38,3 +42,7 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
