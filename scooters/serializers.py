@@ -12,7 +12,7 @@ class ScooterSerializer(serializers.ModelSerializer):
             'capacity',
             'year',
             'registration_number',
-            'image',
+            'available',
             'daily_price',
             'weekly_price',
             'monthly_price',

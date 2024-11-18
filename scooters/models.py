@@ -10,6 +10,7 @@ class Scooter(models.Model):
     capacity = models.IntegerField()
     year = models.IntegerField()
     registration_number = models.CharField(max_length=50, unique=True)
+    available = models.BooleanField(default=False)
     image = models.ImageField(upload_to=directory_path)
     daily_price = models.IntegerField()
     weekly_price = models.IntegerField()
