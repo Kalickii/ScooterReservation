@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from rest_framework.generics import ListAPIView
 
-# Create your views here.
+from scooters.serializers import ScooterSerializer
+from .models import Scooter
+
+
+class ScooterListView(ListAPIView):
+    serializer_class = ScooterSerializer
+
+    def get_queryset(self):
+        return Scooter.objects.filter(available=True)
+
