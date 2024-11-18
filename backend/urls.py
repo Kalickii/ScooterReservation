@@ -22,4 +22,5 @@ from scooters import views as scooters
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('main/', scooters.ScooterListView.as_view(), name='scooter_list'),
+    path('scooter_detail/<str:scooter_id>', scooters.ScooterDetailView.as_view(), name='scooter-detail'),
 ]
