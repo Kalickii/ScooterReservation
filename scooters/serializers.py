@@ -7,11 +7,13 @@ class ScooterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scooter
         fields = [
+            'id',
             'brand',
             'scooter_model',
             'capacity',
             'year',
             'registration_number',
+            'image',
             'available',
             'daily_price',
             'weekly_price',
