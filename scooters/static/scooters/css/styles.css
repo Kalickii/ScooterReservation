@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222024;
+}
+
+/*Navigation bar*/
+.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #2e2b30;
+}
+
+.navbar li {
+    margin: 0;
+    padding: 15px 20px;
+}
+
+.navbar li:hover {
+    background-color: #555;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar .dashboard-login {
+    margin-left: auto;
+}
+
+
+.scooter {
+    list-style-type: none;
+    margin: 10px;
+    padding: 5px;
+}
+
+.scooter a {
+    color: white;
+    text-decoration: none;
+}
