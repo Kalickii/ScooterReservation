@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #222024;
+    color: white;
 }
 
 /*Navigation bar*/
@@ -30,7 +31,6 @@ body {
 .navbar .dashboard-login {
     margin-left: auto;
 }
-
 
 .scooter {
     list-style-type: none;
