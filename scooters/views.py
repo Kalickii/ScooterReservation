@@ -1,36 +1,26 @@
-from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from django.views.generic import ListView, DetailView
 
-from scooters.serializers import ScooterSerializer
-from .models import Scooter
+from scooters.models import Scooter
 
 
-class ScooterListView(ListAPIView):
-    serializer_class = ScooterSerializer
+class ScooterListView(ListView):
+    model = Scooter
+    context_object_name = 'scooters'
+    template_name = 'scooters/main.html'
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_staff:
+        if self.request.user.is_staff:
             return Scooter.objects.all()
         return Scooter.objects.filter(available=True)
 
 
-class ScooterDetailView(RetrieveUpdateDestroyAPIView):
-    serializer_class = ScooterSerializer
-    lookup_url_kwarg = 'scooter_id'
+class ScooterDetailView(DetailView):
+    model = Scooter
+    context_object_name = 'scooter'
+    template_name = 'scooters/scooter_detail.html'
+    pk_url_kwarg = 'scooter_id'
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_staff:
+        if self.request.user.is_staff:
             return Scooter.objects.all()
         return Scooter.objects.filter(available=True)
-
-    def update(self, request, *args, **kwargs):
-        if not self.request.user.is_staff:
-            raise PermissionDenied()
-        return super().update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        if not self.request.user.is_staff:
-            raise PermissionDenied()
-        return super().destroy(request, *args, **kwargs)

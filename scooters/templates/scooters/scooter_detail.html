@@ -1,0 +1,39 @@
+{% extends 'scooters/base.html' %}
+{% load i18n %}
+{% block content %}
+    <h2>{{ scooter.brand }} {{ scooter.scooter_model }}</h2>
+    <ul class="scooter">
+        <li>{{ scooter.image }}</li>
+        <li>
+            {% blocktrans with capacity=scooter.capacity %}
+                Capacity: {{ capacity }}cc
+            {% endblocktrans %}
+        </li>
+        <li>
+            {% blocktrans with year=scooter.year %}
+                Year: {{ year }}
+            {% endblocktrans %}
+        </li>
+        <li>
+            {% blocktrans with deposit=scooter.deposit_amount %}
+                Deposit: {{ deposit }} PLN
+            {% endblocktrans %}
+        </li>
+        <li><p>{% trans 'Prices:' %}</p></li>
+        <li>
+            {% blocktrans with daily=scooter.daily_price %}
+                Day: {{ daily }} PLN
+            {% endblocktrans %}
+        </li>
+        <li>
+            {% blocktrans with weekly=scooter.weekly_price %}
+                Week: {{ weekly }} PLN
+            {% endblocktrans %}
+        </li>
+        <li>
+            {% blocktrans with monthly=scooter.monthly_price %}
+                Monthly: {{ monthly }} PLN
+            {% endblocktrans %}
+        </li>
+    </ul>
+{% endblock %}

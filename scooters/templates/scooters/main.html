@@ -1,5 +1,13 @@
 {% extends 'scooters/base.html' %}
 {% load static %}
 {% block content %}
-    <script src="{% static 'scooters/js/main.js'%}"></script>
+    <ul class="scooter">
+    {% for scooter in scooters %}
+        <li>
+            <a href="{% url 'scooter-detail' scooter_id=scooter.id %}">
+                {{ scooter.brand }} {{ scooter.scooter_model }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}
