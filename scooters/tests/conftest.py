@@ -17,6 +17,18 @@ def staff_user():
 
 
 @fixture
+def superuser_user():
+    superuser_user = CustomUser.objects.create_superuser(
+        email='superuser@gmail.com',
+        first_name='Superuser',
+        last_name='User',
+        phone_number='+555566666',
+        password='admin',
+    )
+    return superuser_user
+
+
+@fixture
 def scooters():
     for _ in range(5):
         scooter = Scooter.objects.create(

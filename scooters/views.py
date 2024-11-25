@@ -1,4 +1,4 @@
-from allauth.core.internal.httpkit import redirect
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView
 
 from scooters.models import Scooter
