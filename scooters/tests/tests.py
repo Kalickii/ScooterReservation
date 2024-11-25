@@ -16,3 +16,23 @@ def test_scooter_list_access(client, staff_user, scooters):
     response = client.get(url)
     assert response.status_code == 200
     assert response.context['scooters'].count() == Scooter.objects.all().count()
+
+
+@pytest.mark.django_db
+def test_available_scooter_detail_view(client, available_scooter):
+    url = reverse('scooter-detail', kwargs={'scooter_id': available_scooter.id})
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.context['scooter'].brand == available_scooter.brand
+
+
+@pytest.mark.django_db
+def test_unavailable_scooter_detail_access(client, staff_user, unavailable_scooter):
+    url = reverse('scooter-detail', kwargs={'scooter_id': unavailable_scooter.id})
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.context['scooter'].brand == unavailable_scooter.brand

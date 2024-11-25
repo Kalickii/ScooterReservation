@@ -32,3 +32,39 @@ def scooters():
             monthly_price=2000,
             deposit_amount=500,
         )
+
+
+@fixture
+def available_scooter():
+    scooter = Scooter.objects.create(
+        brand="Yamaha",
+        scooter_model="XMax 300",
+        capacity=300,
+        year=2022,
+        registration_number="KR12345",
+        available=True,
+        image=None,
+        daily_price=100,
+        weekly_price=600,
+        monthly_price=2000,
+        deposit_amount=500,
+    )
+    return scooter
+
+
+@fixture
+def unavailable_scooter():
+    scooter = Scooter.objects.create(
+        brand="Yamaha",
+        scooter_model="XMax 300",
+        capacity=300,
+        year=2022,
+        registration_number="KR12345",
+        available=False,
+        image=None,
+        daily_price=100,
+        weekly_price=600,
+        monthly_price=2000,
+        deposit_amount=500,
+    )
+    return scooter
