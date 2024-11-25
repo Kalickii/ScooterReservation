@@ -1,6 +1,19 @@
 from pytest import fixture
 
 from scooters.models import Scooter
+from users.models import CustomUser
+
+
+@fixture
+def staff_user():
+    staff_user = CustomUser.objects.create_user(
+        email='staff@gmail.com',
+        first_name='Staff',
+        last_name='User',
+        phone_number='+5555555555',
+        is_staff=True,
+    )
+    return staff_user
 
 
 @fixture
