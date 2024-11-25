@@ -1,9 +1,10 @@
 from django.urls import path
 
-from scooters import views as scooters_temp
+from scooters import views as scooters
 
 
 urlpatterns = [
-    path('main/', scooters_temp.ScooterListView.as_view(), name='scooter-list'),
-    path('main/<scooter_id>', scooters_temp.ScooterDetailView.as_view(), name='scooter-detail'),
+    path('main/', scooters.ScooterListView.as_view(), name='scooter-list'),
+    path('main/<scooter_id>', scooters.ScooterDetailView.as_view(), name='scooter-detail'),
+    path('main/<scooter_id>/edit', scooters.ScooterUpdateView.as_view(), name='scooter-update'),
 ]

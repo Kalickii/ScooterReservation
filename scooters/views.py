@@ -1,4 +1,5 @@
-from django.views.generic import ListView, DetailView
+from allauth.core.internal.httpkit import redirect
+from django.views.generic import ListView, DetailView, UpdateView
 
 from scooters.models import Scooter
 
@@ -24,3 +25,12 @@ class ScooterDetailView(DetailView):
         if self.request.user.is_staff:
             return Scooter.objects.all()
         return Scooter.objects.filter(available=True)
+
+    def post(self, request, *args, **kwargs):
+        if self.request.user.is_superuser:
+            Scooter.objects.get(pk=self.kwargs['scooter_id']).delete()
+            return redirect('scooter-list')
+
+
+class ScooterUpdateView(UpdateView):
+    pass
