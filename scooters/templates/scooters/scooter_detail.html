@@ -2,8 +2,12 @@
 {% load i18n %}
 {% block content %}
     <h2>{{ scooter.brand }} {{ scooter.scooter_model }}</h2>
+    {% if scooter.image %}
+        <img src="{{ scooter.image.url }}" alt="Image of {{ scooter.brand }} {{ scooter.scooter_model }}" style="max-height: 400px; max-width: 400px">
+    {% else %}
+        <p>No image available</p>
+    {% endif %}
     <ul class="scooter">
-        <li>{{ scooter.image }}</li>
         <li>
             {% blocktrans with capacity=scooter.capacity %}
                 Capacity: {{ capacity }}cc

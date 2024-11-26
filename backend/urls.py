@@ -16,12 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 from scooters import views as scooters
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('scooters/', include('scooters.urls')),
-    # path('main/', scooters.ScooterListView.as_view(), name='scooter_list'),
-    # path('scooter_detail/<str:scooter_id>', scooters.ScooterDetailView.as_view(), name='scooter-detail'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
