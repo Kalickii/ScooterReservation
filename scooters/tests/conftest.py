@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from pytest import fixture
 
 from scooters.models import Scooter
@@ -38,7 +39,11 @@ def scooters():
             year=2022,
             registration_number=f"KR12345{_}",
             available= bool(_ % 2),
-            image=None,
+            image=SimpleUploadedFile(
+                name='test_image.jpg',
+                content=b'some_fake_image_content',
+                content_type='image/jpeg',
+            ),
             daily_price=100,
             weekly_price=600,
             monthly_price=2000,
@@ -55,7 +60,11 @@ def available_scooter():
         year=2022,
         registration_number="KR12345",
         available=True,
-        image=None,
+        image=SimpleUploadedFile(
+            name='test_image.jpg',
+            content=b'some_fake_image_content',
+            content_type='image/jpeg',
+        ),
         daily_price=100,
         weekly_price=600,
         monthly_price=2000,
@@ -73,7 +82,11 @@ def unavailable_scooter():
         year=2022,
         registration_number="KR12345",
         available=False,
-        image=None,
+        image=SimpleUploadedFile(
+            name='test_image.jpg',
+            content=b'some_fake_image_content',
+            content_type='image/jpeg',
+        ),
         daily_price=100,
         weekly_price=600,
         monthly_price=2000,

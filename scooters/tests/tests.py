@@ -1,8 +1,8 @@
 import pytest
 from django.urls import reverse
-from django.views.generic import ListView
 
 from scooters.models import Scooter
+
 
 @pytest.mark.django_db
 def test_scooter_list_access(client, staff_user, scooters):
@@ -46,3 +46,39 @@ def test_scooter_detail_delete(client, superuser_user, available_scooter):
     response = client.post(url)
     assert Scooter.objects.filter(id=available_scooter.id).exists() is False
     assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_scooter_detail_edit_access(client, staff_user, superuser_user, available_scooter):
+    url = reverse('scooter-update', kwargs={'scooter_id': available_scooter.id})
+
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(superuser_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_scooter_detail_edit_data(client, superuser_user, available_scooter):
+    url = reverse('scooter-update', kwargs={'scooter_id': available_scooter.id})
+    client.force_login(superuser_user)
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.context['scooter'].available == True
+    assert response.context['scooter'].daily_price == 100
+    response = client.post(url, data={
+        'available': False,
+        'daily_price': 200,
+        'weekly_price': available_scooter.weekly_price,
+        'monthly_price': available_scooter.monthly_price,
+        'deposit_amount': available_scooter.deposit_amount,
+    })
+    assert response.status_code == 302
+    assert Scooter.objects.get(id=available_scooter.id).available is False
+    assert Scooter.objects.get(id=available_scooter.id).daily_price == 200
