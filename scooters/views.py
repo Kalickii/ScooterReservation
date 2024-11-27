@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView
 from rest_framework.reverse import reverse_lazy
 
 from scooters.models import Scooter
@@ -54,3 +54,7 @@ class ScooterUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('scooter-detail', kwargs={'scooter_id': self.object.pk})
+
+
+class ScooterCreateView(CreateView):
+    pass

@@ -67,6 +67,12 @@ body {
   border: 1px solid #b9271f;
 }
 
+.create-btn {
+  background-color: #9500ce;
+  color: white;
+  border: 1px solid #790278;
+}
+
 .btn:hover {
   opacity: 0.8;
 }
