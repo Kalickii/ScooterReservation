@@ -67,6 +67,12 @@ def test_scooter_detail_edit_access(client, staff_user, superuser_user, availabl
 
 @pytest.mark.django_db
 def test_scooter_detail_edit_data(client, superuser_user, available_scooter):
+    available_scooter.image = SimpleUploadedFile(
+                name='test_image.jpg',
+                content=b'some_fake_image_content',
+                content_type='image/jpeg',
+            )
+    available_scooter.save()
     url = reverse('scooter-update', kwargs={'scooter_id': available_scooter.id})
     client.force_login(superuser_user)
     response = client.get(url)
