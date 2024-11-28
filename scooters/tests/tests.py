@@ -1,4 +1,5 @@
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
 from scooters.models import Scooter
@@ -82,3 +83,45 @@ def test_scooter_detail_edit_data(client, superuser_user, available_scooter):
     assert response.status_code == 302
     assert Scooter.objects.get(id=available_scooter.id).available is False
     assert Scooter.objects.get(id=available_scooter.id).daily_price == 200
+
+
+@pytest.mark.django_db
+def test_scooter_create_access(client, staff_user, superuser_user):
+    url = reverse('scooter-create')
+
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(superuser_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_scooter_create_data(client, superuser_user, create_image):
+    url = reverse('scooter-create')
+    client.force_login(superuser_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+    response = client.post(url, data={
+        'brand': 'Romet',
+        'scooter_model': 'Zadymiarz 4T',
+        'capacity': 50,
+        'year': 2015,
+        'registration_number': 'KRAM30B',
+        'available': False,
+        'image': create_image,
+        'daily_price': 100,
+        'weekly_price': 400,
+        'monthly_price': 1300,
+        'deposit_amount': 400,
+    })
+    assert response.status_code == 302
+    assert Scooter.objects.count() == 1
+    assert Scooter.objects.first().available is False
+    assert Scooter.objects.first().registration_number == 'KRAM30B'

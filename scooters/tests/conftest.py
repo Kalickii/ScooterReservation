@@ -1,3 +1,6 @@
+from PIL import Image
+from io import BytesIO
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from pytest import fixture
 
@@ -93,3 +96,15 @@ def unavailable_scooter():
         deposit_amount=500,
     )
     return scooter
+
+
+@fixture
+def create_image():
+    image = Image.new('RGB', (100, 100))
+    buffer = BytesIO()
+    image.save(buffer, 'JPEG')
+    return SimpleUploadedFile(
+        name='test_image.jpg',
+        content=buffer.getvalue(),
+        content_type='image/jpeg',
+    )
