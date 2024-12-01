@@ -1,3 +1,18 @@
-from django.shortcuts import render
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
-# Create your views here.
+
+class ReservationListView(ListView):
+    pass
+
+
+class ReservationUpdateView(UpdateView):
+    pass
+
+
+class ReservationCreateView(CreateView):
+    pass
+
+
+class ReservationDetailView(DetailView):
+    pass
+
