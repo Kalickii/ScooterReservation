@@ -141,14 +141,21 @@ MEDIA_ROOT = BASE_DIR / 'images'
 
 # Django all-auth
 AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 # Other all-auth configuration settings
 AUTH_USER_MODEL = 'users.CustomUser'
 
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_CHANGE_EMAIL = True
 ACCOUNT_EMAIL_NOTIFICATIONS = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_CHANGE_EMAIL = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_FORMS = {'signup': 'users.forms.CustomSignupForm'}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

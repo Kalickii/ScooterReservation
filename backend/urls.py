@@ -24,6 +24,7 @@ from scooters import views as scooters
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('scooters/', include('scooters.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
 
 
