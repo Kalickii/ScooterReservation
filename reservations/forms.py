@@ -39,15 +39,11 @@ class ReservationCreateForm(forms.ModelForm):
             raise ValidationError(_('Start date must be before end date'))
 
         current_delta = end_date - start_date
-        current_period = []
-        for i in range(0, current_delta.days + 1):
-            current_period.append(start_date + timedelta(days=i))
+        current_period = [(start_date + timedelta(days=i)) for i in range(0, current_delta.days + 1)]
 
         for reservation in Reservation.objects.filter(scooter=Scooter.objects.get(id=self.scooter_id)):
             delta = reservation.end_date - reservation.start_date
-            period = []
-            for i in range(0, delta.days + 1):
-                period.append(reservation.start_date + timedelta(days=i))
+            period = [(reservation.start_date + timedelta(days=i)) for i in range(0, delta.days + 1)]
 
             for day in current_period:
                 if day in period:
