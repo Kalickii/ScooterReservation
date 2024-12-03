@@ -1,16 +1,30 @@
+from allauth.core.internal.httpkit import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
-
 
 from reservations.forms import ReservationCreateForm
 from reservations.models import Reservation
 from scooters.models import Scooter
 
 
-class ReservationListView(ListView):
-    pass
+class ReservationListView(UserPassesTestMixin, ListView):
+    model = Reservation
+    template_name = 'reservations/reservation_list.html'
+    context_object_name = 'reservations'
+    queryset = Reservation.objects.all().order_by('start_date')
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def handle_no_permission(self):
+        raise Http404
+
+    def post(self, request, *args, **kwargs):
+        if self.request.user.is_superuser:
+            Reservation.objects.get(pk=request.POST.get('reservation_id')).delete()
+        return redirect('reservations-list')
 
 
 class ReservationUpdateView(UpdateView):
