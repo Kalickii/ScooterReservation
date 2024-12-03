@@ -42,7 +42,7 @@ class ReservationCreateView(UserPassesTestMixin, CreateView):
         return self.request.user.is_authenticated
 
     def handle_no_permission(self):
-        raise Http404 ### WAITING TO BE FINISHED - REDIRECT TO REGISTER WEBSITE
+        raise Http404
 
 
 class ReservationDetailView(DetailView):

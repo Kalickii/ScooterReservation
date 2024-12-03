@@ -1,7 +1,7 @@
 import pytest
-from datetime import datetime
+from datetime import date, timedelta
 from reservations.models import Reservation
-from scooters.tests.conftest import available_scooter
+from scooters.tests.conftest import available_scooter, staff_user, superuser_user
 from users.models import CustomUser
 
 
@@ -21,7 +21,7 @@ def reservation(available_scooter, simple_user):
     reservation = Reservation.objects.create(
         userprofile=simple_user.userprofile,
         scooter=available_scooter,
-        start_date=datetime(2024, 12, 1),
-        end_date=datetime(2024, 12, 7),
+        start_date=date.today() + timedelta(days=1),
+        end_date=date.today() + timedelta(days=10),
     )
     return reservation
