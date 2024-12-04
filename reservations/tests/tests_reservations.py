@@ -1,7 +1,6 @@
 import pytest
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
 
-from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from reservations.models import Reservation
@@ -12,6 +11,8 @@ def test_reservation_calculate_price_method(reservation):
     reservation.calculate_price()
     assert reservation.total_price == 500
 
+
+# RESERVATION CREATE VIEW
 
 @pytest.mark.django_db
 def test_reservation_create_view_access(client, simple_user, available_scooter):
@@ -74,3 +75,43 @@ def test_reservation_create_with_taken_date(client, simple_user, available_scoot
     assert response.status_code == 200
     assert Reservation.objects.filter(scooter=available_scooter).exists()
     assert Reservation.objects.filter(start_date=date.today() + timedelta(days=9)).exists() is False
+
+
+# RESERVATION LIST VIEW
+
+@pytest.mark.django_db
+def test_reservation_list_view_access(client, staff_user, simple_user):
+    url = reverse('reservations-list')
+    client.force_login(simple_user)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_reservation_list_view_data(client, staff_user, superuser_user, reservations):
+    url = reverse('reservations-list')
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert list(response.context['reservations']) == list(Reservation.objects.all().order_by('start_date'))
+
+
+
+@pytest.mark.django_db
+def test_reservation_list_view_delete_functionality_access(client, staff_user, superuser_user, reservation):
+    url = reverse('reservations-list')
+    assert Reservation.objects.filter(pk=reservation.pk).exists()
+    client.force_login(staff_user)
+    response = client.post(url, data={'reservation_id': reservation.pk})
+    assert response.status_code == 302
+    assert response.url == reverse('reservations-list')
+    assert Reservation.objects.filter(pk=reservation.pk).exists()
+
+    client.force_login(superuser_user)
+    response = client.post(url, data={'reservation_id': reservation.pk})
+    assert response.status_code == 302
+    assert response.url == reverse('reservations-list')
+    assert Reservation.objects.filter(pk=reservation.pk).exists() is False
