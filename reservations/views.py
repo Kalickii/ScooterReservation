@@ -59,5 +59,18 @@ class ReservationCreateView(UserPassesTestMixin, CreateView):
         raise Http404
 
 
-class ReservationDetailView(DetailView):
-    pass
+class ReservationDetailView(UserPassesTestMixin, DetailView):
+    model = Reservation
+    template_name = 'reservations/reservation_update.html'
+    pk_url_kwarg = 'reservation_id'
+    context_object_name = 'reservation'
+
+    def get_object(self, **kwargs):
+        return Reservation.objects.get(pk=self.kwargs['reservation_id'])
+
+    def test_func(self):
+        reservation = self.get_object()
+        return self.request.user.userprofile == reservation.userprofile or self.request.user.is_staff
+
+    def handle_no_permission(self):
+        raise Http404
