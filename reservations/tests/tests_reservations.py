@@ -146,3 +146,77 @@ def test_reservation_detail_view_data(client, simple_user, reservation):
     assert response.context['reservation'].start_date == reservation.start_date
     assert response.context['reservation'].end_date == reservation.end_date
     assert response.context['reservation'].payment_status == False
+
+
+# RESERVATION UPDATE VIEW
+
+@pytest.mark.django_db
+def test_reservation_update_view_access(client, simple_user, staff_user, reservation):
+    url = reverse('reservations-update', kwargs={'reservation_id': reservation.pk})
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(simple_user)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_reservation_update_view_data(client, staff_user, reservation):
+    url = reverse('reservations-update', kwargs={'reservation_id': reservation.pk})
+    client.force_login(staff_user)
+    response = client.post(url, data={
+        'start_date': reservation.start_date + timedelta(days=1),
+        'end_date': reservation.end_date - timedelta(days=1),
+        'payment_status': True,
+        'scooter': reservation.scooter.pk,
+    })
+    assert response.status_code == 302
+    assert response.url == reverse('reservations-detail', kwargs={'reservation_id': reservation.pk})
+    assert Reservation.objects.get(pk=reservation.pk).start_date == reservation.start_date + timedelta(days=1)
+    assert Reservation.objects.get(pk=reservation.pk).end_date == reservation.end_date - timedelta(days=1)
+    assert Reservation.objects.get(pk=reservation.pk).payment_status == True
+
+
+@pytest.mark.django_db
+def test_reservation_update_view_with_invalid_date(client, staff_user, reservation):
+    url = reverse('reservations-update', kwargs={'reservation_id': reservation.pk})
+    client.force_login(staff_user)
+    response = client.post(url, data={
+        'start_date': date.today() + timedelta(days=5),
+        'end_date': date.today() + timedelta(days=2),
+        'payment_status': True,
+        'scooter': reservation.scooter.pk,
+    })
+    assert response.status_code == 200
+    assert Reservation.objects.filter(pk=reservation.pk, start_date=date.today() + timedelta(days=5)).exists() is False
+
+    response = client.post(url, data={
+        'start_date': date.today() + timedelta(days=3),
+        'end_date': date.today() + timedelta(days=3),
+        'payment_status': True,
+        'scooter': reservation.scooter.pk,
+    })
+    assert response.status_code == 200
+    assert Reservation.objects.filter(pk=reservation.pk, start_date=date.today() + timedelta(days=3)).exists() is False
+
+
+
+@pytest.mark.django_db
+def test_reservation_update_view_with_taken_date(client, staff_user, reservations):
+    reservation = Reservation.objects.all().first()
+    url = reverse('reservations-update', kwargs={'reservation_id': reservation.pk})
+    client.force_login(staff_user)
+    response = client.post(url, data={
+        'start_date': date.today() + timedelta(days=11),
+        'end_date': date.today() + timedelta(days=14),
+        'payment_status': True,
+        'scooter': reservation.scooter.pk,
+    })
+    assert response.status_code == 200
+    assert Reservation.objects.filter(pk=reservation.pk, end_date=date.today() + timedelta(days=10)).exists()
+    assert Reservation.objects.filter(pk=reservation.pk, end_date=date.today() + timedelta(days=14)).exists() is False

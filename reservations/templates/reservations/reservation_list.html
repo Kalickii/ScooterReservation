@@ -22,7 +22,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'reservation-update' reservation_id=reservation.pk %}" class="btn edit-btn">Edit</a>
+                    <a href="{% url 'reservations-update' reservation_id=reservation.pk %}" class="btn edit-btn">Edit</a>
                     {% if user.is_superuser %}
                         <form method="post">
                              {% csrf_token %}
