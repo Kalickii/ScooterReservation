@@ -70,7 +70,8 @@ class ReservationDetailView(UserPassesTestMixin, DetailView):
 
     def test_func(self):
         reservation = self.get_object()
-        return self.request.user.userprofile == reservation.userprofile or self.request.user.is_staff
+        user = self.request.user
+        return user.is_authenticated and (user.userprofile == reservation.userprofile or user.is_staff)
 
     def handle_no_permission(self):
         raise Http404

@@ -115,3 +115,34 @@ def test_reservation_list_view_delete_functionality_access(client, staff_user, s
     assert response.status_code == 302
     assert response.url == reverse('reservations-list')
     assert Reservation.objects.filter(pk=reservation.pk).exists() is False
+
+
+# RESERVATION DETAIL VIEW
+
+@pytest.mark.django_db
+def test_reservation_detail_view_access(client, simple_user, simple_user2, staff_user, reservation):
+    url = reverse('reservations-detail', kwargs={'reservation_id': reservation.pk})
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(simple_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+    client.force_login(simple_user2)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_reservation_detail_view_data(client, simple_user, reservation):
+    url = reverse('reservations-detail', kwargs={'reservation_id': reservation.pk})
+    client.force_login(simple_user)
+    response = client.get(url)
+    assert response.context['reservation'].start_date == reservation.start_date
+    assert response.context['reservation'].end_date == reservation.end_date
+    assert response.context['reservation'].payment_status == False

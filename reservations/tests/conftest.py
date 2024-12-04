@@ -18,6 +18,18 @@ def simple_user():
 
 
 @pytest.fixture
+def simple_user2():
+    user = CustomUser.objects.create_user(
+        email='simpleuser2@gmail.com',
+        first_name='simple2',
+        last_name='user2',
+        phone_number='987654321',
+        password='simplepassword123'
+    )
+    return user
+
+
+@pytest.fixture
 def reservation(available_scooter, simple_user):
     reservation = Reservation.objects.create(
         userprofile=simple_user.userprofile,
