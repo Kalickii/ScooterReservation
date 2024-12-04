@@ -1,6 +1,6 @@
-from allauth.core.internal.httpkit import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 

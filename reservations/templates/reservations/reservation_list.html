@@ -11,7 +11,7 @@
      </tr>
         {% for reservation in reservations %}
             <tr>
-                <td>{{ reservation.start_date }} - {{ reservation.end_date }}</td>
+                <td><a href="{% url 'reservations-detail' reservation_id=reservation.id %}">{{ reservation.start_date }} - {{ reservation.end_date }}</a></td>
                 <td>{{ reservation.userprofile.user }}</td>
                 <td>{{ reservation.scooter }}</td>
                 <td>
