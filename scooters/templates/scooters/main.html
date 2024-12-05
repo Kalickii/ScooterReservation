@@ -10,5 +10,7 @@
         </li>
     {% endfor %}
     </ul>
+    {% if user.is_superuser %}
     <a href="{% url 'scooter-create' %}" class="btn create-btn">Add Scooter</a>
+    {% endif %}
 {% endblock %}
