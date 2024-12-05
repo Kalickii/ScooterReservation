@@ -38,3 +38,13 @@ def test_user_dashboard_access(client, simple_user, simple_user2):
 @pytest.mark.django_db
 def test_user_dashboard_data(client):
     pass
+
+
+@pytest.mark.django_db
+def test_user_dashboard_reservations(client):
+    pass
+
+
+@pytest.mark.django_db
+def test_user_dashboard_incoming_reservation(client):
+    pass

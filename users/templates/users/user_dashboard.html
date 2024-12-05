@@ -1,8 +1,33 @@
 {% extends 'scooters/base.html' %}
 {% block content %}
     <h1>{{ user }} Dashboard</h1>
+        {% if next_reservation %}
+            <h2>Incoming Reservation:</h2>
+            <ul>
+                <li>{{ next_reservation.scooter }}</li>
+                    {% if next_reservation.payment_status %}
+                <li>Payment Status: Paid</li>
+                    {% else %}
+                <li>Payment Status: Unpaid</li>
+                    {% endif %}
+                <li>{{ next_reservation.start_date }} - {{ next_reservation.end_date }}</li>
+            </ul>
+        {% endif %}
 
-
+    <h3>Full Reservation History:</h3>
+    <ul>
+    {% for reservation in reservations %}
+        <ul>
+                <li>{{ next_reservation.scooter }}</li>
+                    {% if next_reservation.payment_status %}
+                <li>Payment Status: Paid</li>
+                    {% else %}
+                <li>Payment Status: Unpaid</li>
+                    {% endif %}
+                <li>{{ next_reservation.start_date }} - {{ next_reservation.end_date }}</li>
+        </ul>
+    {% endfor %}
+    </ul>
     <p><a href="{% url 'account_change_password' %}">Change Password</a></p>
     <p><a href="{% url 'account_logout' %}">Logout</a></p>
 {% endblock %}
