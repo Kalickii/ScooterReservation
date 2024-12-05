@@ -19,12 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from scooters import views as scooters
+from users import views as user_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('scooters/', include('scooters.urls')),
     path('accounts/', include('allauth.urls')),
+    path('user_dashboard/', user_views.UserDashboardView.as_view(), name='user-dashboard'),
+    path('user_dashboard/<int:user_id>', user_views.UserDashboardView.as_view(), name='user-dashboard-admin'),
 ]
 
 

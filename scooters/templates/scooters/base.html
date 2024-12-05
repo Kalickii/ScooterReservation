@@ -9,13 +9,13 @@
             <body>
                 <ul class="navbar">
                   <li><a href="">{% trans 'Home Page' %}</a></li>
-                  <li><a href="">{% trans 'Scooter Offer' %}</a></li>
+                  <li><a href="{% url 'scooter-list' %}">{% trans 'Scooter Offer' %}</a></li>
                   <li><a href="">{% trans 'About us' %}</a></li>
                   <li><a href="">{% trans 'Contact' %}</a></li>
                     {% if user.is_authenticated %}
-                  <li class="dashboard-login"><a href="">{% trans 'User Dashboard' %}</a></li>
+                  <li class="dashboard-login"><a href="{% url 'user-dashboard' %}">{% trans 'User Dashboard' %}</a></li>
                     {% else %}
-                  <li class="dashboard-login"><a href="">{% trans 'Login/Register' %}</a></li>
+                  <li class="dashboard-login"><a href="{% url 'account_login' %}">{% trans 'Login/Register' %}</a></li>
                     {% endif %}
                 </ul>
                 {% block content %}

@@ -159,3 +159,11 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_FORMS = {'signup': 'users.forms.CustomSignupForm'}
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_REDIRECT_URL = '/scooters/'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/scooters/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/scooters/'
+ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL = '/scooters/'
+ACCOUNT_PASSWORD_RESET_DONE_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/user_dashboard/'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'
