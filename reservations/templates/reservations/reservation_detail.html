@@ -1,0 +1,17 @@
+{% extends 'scooters/base.html' %}
+{% block content %}
+    <h1>{{ reservation.scooter }} Reservation Details:</h1>
+        <ul>
+            <li>
+                Date: {{ reservation.start_date }} - {{ reservation.end_date }}
+            </li>
+            <li>
+                Payment Status:
+                {% if reservation.payment_status %}
+                Paid - {{ reservation.scooter.deposit_amount }} PLN
+                {% else %}
+                Unpaid - {{ reservation.scooter.deposit_amount }} PLN
+                {% endif %}
+            </li>
+        </ul>
+{% endblock %}

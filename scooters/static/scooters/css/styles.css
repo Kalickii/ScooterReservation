@@ -73,6 +73,12 @@ body {
   border: 1px solid #790278;
 }
 
+.book-btn {
+  background-color: #989598;
+  color: #0a0707;
+  border: 1px solid #4f4e4e;
+}
+
 .btn:hover {
   opacity: 0.8;
 }

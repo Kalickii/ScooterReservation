@@ -28,6 +28,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('user_dashboard/', user_views.UserDashboardView.as_view(), name='user-dashboard'),
     path('user_dashboard/<int:user_id>', user_views.UserDashboardView.as_view(), name='user-dashboard-admin'),
+    path('reservations/', include('reservations.urls')),
 ]
 
 
