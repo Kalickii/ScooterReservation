@@ -41,7 +41,7 @@ class ReservationCreateForm(forms.ModelForm):
         current_delta = end_date - start_date
         current_period = [(start_date + timedelta(days=i)) for i in range(0, current_delta.days + 1)]
 
-        for reservation in Reservation.objects.filter(scooter=Scooter.objects.get(id=self.scooter_id)):
+        for reservation in Reservation.objects.filter(scooter=Scooter.objects.get(id=self.scooter_id), payment_status=True):
             delta = reservation.end_date - reservation.start_date
             period = [(reservation.start_date + timedelta(days=i)) for i in range(0, delta.days + 1)]
 

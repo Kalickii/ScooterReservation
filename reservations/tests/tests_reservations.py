@@ -37,7 +37,7 @@ def test_reservation_create_view_data(client, simple_user, available_scooter):
             'end_date': date.today() + timedelta(days=5),
     })
     assert response.status_code == 302
-    assert response.url == reverse('scooter-list') ### WAITING TO BE FINISHED - REDIRECT TO PAYMENT CHECKOUT             !!!       !!!        !!!       !!!
+    assert response.url == reverse('reservations-detail', kwargs={'reservation_id': Reservation.objects.get(start_date=date.today() + timedelta(days=1)).pk})
     reservations = Reservation.objects.filter(scooter=available_scooter)
     assert reservations.count() == 1
     assert reservations.first().start_date == date.today() + timedelta(days=1)
@@ -66,6 +66,8 @@ def test_reservation_create_with_invalid_date(client, simple_user, available_sco
 
 @pytest.mark.django_db
 def test_reservation_create_with_taken_date(client, simple_user, available_scooter, reservation):
+    reservation.payment_status = True
+    reservation.save()
     url = reverse('reservations-create', kwargs={'scooter_id': available_scooter.pk})
     client.force_login(simple_user)
     response = client.post(url, data={

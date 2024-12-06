@@ -83,7 +83,7 @@ class ReservationDetailView(UserPassesTestMixin, DetailView):
     context_object_name = 'reservation'
 
     def get_object(self, **kwargs):
-        return Reservation.objects.get(pk=self.kwargs['reservation_id'])
+        return get_object_or_404(Reservation, pk=self.kwargs['reservation_id'])
 
     def test_func(self):
         reservation = self.get_object()
