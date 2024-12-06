@@ -10,7 +10,7 @@ from django.conf import settings
 from reservations.forms import ReservationCreateForm, ReservationUpdateForm
 from reservations.models import Reservation
 from scooters.models import Scooter
-
+from users.models import UserProfile
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -123,16 +123,30 @@ class CreateCheckoutSessionView(View):
         return redirect(checkout_session.url)
 
 
-class PaymentSuccessView(View):
+class PaymentSuccessView(UserPassesTestMixin, View):
     def get(self, request, *args, **kwargs):
-        reservation = Reservation.objects.get(pk=request.GET.get('reservation_id'))
+        reservation = get_object_or_404(Reservation, pk=self.request.GET.get('reservation_id'))
         reservation.payment_status = True
         reservation.save()
         return render(request, 'reservations/payment_success.html')
 
+    def test_func(self):
+        reservation = get_object_or_404(Reservation, pk=self.request.GET.get('reservation_id'))
+        return self.request.user == reservation.userprofile.user
 
-class PaymentCancelView(View):
+    def handle_no_permission(self):
+        raise Http404
+
+
+class PaymentCancelView(UserPassesTestMixin, View):
     def get(self, request, *args, **kwargs):
         reservation = Reservation.objects.get(pk=request.GET.get('reservation_id'))
         reservation.delete()
         return render(request, 'reservations/payment_cancel.html')
+
+    def test_func(self):
+        reservation = get_object_or_404(Reservation, pk=self.request.GET.get('reservation_id'))
+        return self.request.user == reservation.userprofile.user
+
+    def handle_no_permission(self):
+        raise Http404

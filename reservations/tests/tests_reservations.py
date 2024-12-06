@@ -222,3 +222,15 @@ def test_reservation_update_view_with_taken_date(client, staff_user, reservation
     assert response.status_code == 200
     assert Reservation.objects.filter(pk=reservation.pk, end_date=date.today() + timedelta(days=10)).exists()
     assert Reservation.objects.filter(pk=reservation.pk, end_date=date.today() + timedelta(days=14)).exists() is False
+
+
+# SUCCESS & CANCEL URL's
+
+@pytest.mark.django_db
+def test_reservation_update_on_success_url(client, staff_user, reservation):
+    url = reverse()
+
+
+@pytest.mark.django_db
+def test_reservation_delete_on_cancel_url(client, staff_user, reservation):
+    pass
