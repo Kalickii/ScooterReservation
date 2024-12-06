@@ -1,9 +1,10 @@
 import pytest
 from rest_framework.reverse import reverse
 
+from reservations.models import Reservation
 from users.models import CustomUser, UserProfile
 from scooters.tests.conftest import staff_user, superuser_user
-from reservations.tests.conftest import simple_user, simple_user2
+from reservations.tests.conftest import simple_user, simple_user2, reservations, available_scooter
 
 
 @pytest.mark.django_db
@@ -36,15 +37,19 @@ def test_user_dashboard_access(client, simple_user, simple_user2):
 
 
 @pytest.mark.django_db
-def test_user_dashboard_data(client):
-    pass
+def test_user_dashboard_reservations(client, simple_user, reservations):
+    url = reverse('user-dashboard')
+    client.force_login(simple_user)
+    response = client.get(url)
+    assert response.context['reservations'][0] == Reservation.objects.filter(userprofile=simple_user.userprofile).order_by('start_date').first()
+    assert response.context['reservations'].count() == Reservation.objects.filter(userprofile=simple_user.userprofile).count()
 
 
 @pytest.mark.django_db
-def test_user_dashboard_reservations(client):
-    pass
+def test_user_dashboard_incoming_reservation(client, simple_user, reservations):
+    url = reverse('user-dashboard')
+    client.force_login(simple_user)
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.context['next_reservation'] == Reservation.objects.filter(userprofile=simple_user.userprofile).order_by('start_date').first()
 
-
-@pytest.mark.django_db
-def test_user_dashboard_incoming_reservation(client):
-    pass
