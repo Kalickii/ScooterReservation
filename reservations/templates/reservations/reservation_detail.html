@@ -1,0 +1,24 @@
+{% extends 'scooters/base.html' %}
+{% block content %}
+    <h1>{{ reservation.scooter }} Reservation Details:</h1>
+        <ul>
+            <li>
+                Date: {{ reservation.start_date }} - {{ reservation.end_date }}
+            </li>
+            <li>
+                Payment Status:
+                {% if reservation.payment_status %}
+                Paid - {{ reservation.scooter.deposit_amount }} PLN
+                {% else %}
+                Unpaid - {{ reservation.scooter.deposit_amount }} PLN
+                {% endif %}
+            </li>
+        </ul>
+        {% if not reservation.payment_status %}
+            <form action="{% url 'create-checkout-session' reservation_id=reservation.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Pay</button>
+            </form>
+            <a href="{% url 'payment-cancel' %}?reservation_id={{ reservation.pk }}">Cancel</a>
+        {% endif %}
+{% endblock %}

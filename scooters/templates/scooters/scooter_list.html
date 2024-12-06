@@ -1,0 +1,16 @@
+{% extends 'scooters/base.html' %}
+{% load static %}
+{% block content %}
+    <ul class="scooter">
+    {% for scooter in scooters %}
+        <li>
+            <a href="{% url 'scooter-detail' scooter_id=scooter.id %}">
+                {{ scooter }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+    {% if user.is_superuser %}
+    <a href="{% url 'scooter-create' %}" class="btn create-btn">Add Scooter</a>
+    {% endif %}
+{% endblock %}

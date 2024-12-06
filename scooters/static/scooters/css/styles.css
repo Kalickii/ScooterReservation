@@ -1,0 +1,84 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222024;
+    color: white;
+}
+
+/*Navigation bar*/
+.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #2e2b30;
+}
+
+.navbar li {
+    margin: 0;
+    padding: 15px 20px;
+}
+
+.navbar li:hover {
+    background-color: #555;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar .dashboard-login {
+    margin-left: auto;
+}
+
+.scooter {
+    list-style-type: none;
+    margin: 10px;
+    padding: 5px;
+}
+
+.scooter a {
+    color: white;
+    text-decoration: none;
+}
+
+/*Buttons*/
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+}
+
+.edit-btn {
+  background-color: #b97c0f;
+  color: white;
+  border: 1px solid #a45200;
+}
+
+.delete-btn {
+  background-color: #981007;
+  color: white;
+  border: 1px solid #b9271f;
+}
+
+.create-btn {
+  background-color: #9500ce;
+  color: white;
+  border: 1px solid #790278;
+}
+
+.book-btn {
+  background-color: #989598;
+  color: #0a0707;
+  border: 1px solid #4f4e4e;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
