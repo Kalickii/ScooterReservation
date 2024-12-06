@@ -41,7 +41,7 @@ def reservation(available_scooter, simple_user):
 
 
 @pytest.fixture
-def reservations(available_scooter, simple_user):
+def reservations(available_scooter, simple_user, simple_user2):
     Reservation.objects.create(
         userprofile=simple_user.userprofile,
         scooter=available_scooter,
@@ -49,7 +49,7 @@ def reservations(available_scooter, simple_user):
         end_date=date.today() + timedelta(days=10),
     )
     Reservation.objects.create(
-        userprofile=simple_user.userprofile,
+        userprofile=simple_user2.userprofile,
         scooter=available_scooter,
         start_date=date.today() + timedelta(days=13),
         end_date=date.today() + timedelta(days=15),
@@ -61,7 +61,7 @@ def reservations(available_scooter, simple_user):
         end_date=date.today() + timedelta(days=29),
     )
     Reservation.objects.create(
-        userprofile=simple_user.userprofile,
+        userprofile=simple_user2.userprofile,
         scooter=available_scooter,
         start_date=date.today() + timedelta(days=16),
         end_date=date.today() + timedelta(days=19),

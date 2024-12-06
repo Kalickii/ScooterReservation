@@ -10,6 +10,7 @@ class Reservation(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     payment_status = models.BooleanField(default=False)
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     total_price = models.IntegerField(null=True, blank=True)
 
     def calculate_price(self):

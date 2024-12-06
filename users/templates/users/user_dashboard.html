@@ -2,7 +2,7 @@
 {% block content %}
     <h1>{{ user }} Dashboard</h1>
         {% if next_reservation %}
-            <h2>Incoming Reservation:</h2>
+            <h2><a href="{% url 'reservations-detail' reservation_id=next_reservation.id %}">Incoming Reservation:</a></h2>
             <ul>
                 <li>{{ next_reservation.scooter }}</li>
                     {% if next_reservation.payment_status %}
@@ -18,13 +18,14 @@
     <ul>
     {% for reservation in reservations %}
         <ul>
-                <li>{{ next_reservation.scooter }}</li>
-                    {% if next_reservation.payment_status %}
+            <h4><a href="{% url 'reservations-detail' reservation_id=reservation.id %}">Reservation:</a></h4>
+                <li>{{ reservation.scooter }}</li>
+                    {% if reservation.payment_status %}
                 <li>Payment Status: Paid</li>
                     {% else %}
                 <li>Payment Status: Unpaid</li>
                     {% endif %}
-                <li>{{ next_reservation.start_date }} - {{ next_reservation.end_date }}</li>
+                <li>{{ reservation.start_date }} - {{ reservation.end_date }}</li>
         </ul>
     {% endfor %}
     </ul>

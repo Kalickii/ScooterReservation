@@ -14,4 +14,10 @@
                 {% endif %}
             </li>
         </ul>
+        {% if not reservation.payment_status %}
+            <form action="{% url 'create-checkout-session' reservation_id=reservation.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Pay</button>
+            </form>
+        {% endif %}
 {% endblock %}
