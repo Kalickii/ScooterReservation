@@ -227,10 +227,39 @@ def test_reservation_update_view_with_taken_date(client, staff_user, reservation
 # SUCCESS & CANCEL URL's
 
 @pytest.mark.django_db
-def test_reservation_update_on_success_url(client, staff_user, reservation):
-    url = reverse()
+def test_payment_success_view(client, simple_user, simple_user2, staff_user, reservation):
+    base_url = reverse('payment-success')
+    url = f'{base_url}?reservation_id={reservation.pk}'
+    client.force_login(simple_user)
+    assert Reservation.objects.get(pk=reservation.pk).payment_status == False
+    response = client.get(url)
+    assert response.status_code == 200
+    assert Reservation.objects.get(pk=reservation.pk).payment_status == True
+
+    client.force_login(simple_user2)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 404
+
 
 
 @pytest.mark.django_db
-def test_reservation_delete_on_cancel_url(client, staff_user, reservation):
-    pass
+def test_payment_cancel_view(client, simple_user, simple_user2, staff_user, reservation):
+    base_url = reverse('payment-cancel')
+    url = f'{base_url}?reservation_id={reservation.pk}'
+    client.force_login(simple_user)
+    assert Reservation.objects.filter(pk=reservation.pk).exists()
+    response = client.get(url)
+    assert response.status_code == 200
+    assert Reservation.objects.filter(pk=reservation.pk).exists() is False
+
+    client.force_login(simple_user2)
+    response = client.get(url)
+    assert response.status_code == 404
+
+    client.force_login(staff_user)
+    response = client.get(url)
+    assert response.status_code == 404
