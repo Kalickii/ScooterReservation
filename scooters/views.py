@@ -10,7 +10,7 @@ from scooters.models import Scooter
 class ScooterListView(ListView):
     model = Scooter
     context_object_name = 'scooters'
-    template_name = 'scooters/main.html'
+    template_name = 'scooters/scooter_list.html'
 
     def get_queryset(self):
         if self.request.user.is_staff:

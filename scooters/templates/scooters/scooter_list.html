@@ -5,7 +5,7 @@
     {% for scooter in scooters %}
         <li>
             <a href="{% url 'scooter-detail' scooter_id=scooter.id %}">
-                {{ scooter.brand }} {{ scooter.scooter_model }}
+                {{ scooter }}
             </a>
         </li>
     {% endfor %}

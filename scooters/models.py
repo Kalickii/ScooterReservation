@@ -18,4 +18,4 @@ class Scooter(models.Model):
     deposit_amount = models.IntegerField()
 
     def __str__(self):
-        return f'{self.brand} {self.scooter_model}'
+        return f'{self.brand} {self.scooter_model} {self.capacity}cc'
