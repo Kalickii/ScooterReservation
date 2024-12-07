@@ -19,6 +19,6 @@
             {% csrf_token %}
             <button type="submit">Pay</button>
             </form>
-            <a href="{% url 'payment-cancel' %}?reservation_id={{ reservation.pk }}">Cancel</a>
+            <a href="{% url 'payment-cancel' %}?reservation_id={{ reservation.pk }}" onclick="return confirm('Do you want to cancel your reservation?')">Cancel</a>
         {% endif %}
 {% endblock %}

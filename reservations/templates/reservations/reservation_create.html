@@ -5,4 +5,13 @@
         {{ form.as_p }}
         <button type="submit">Book</button>
     </form>
+
+    {% if reservations %}
+    <h3>Scooter Incoming Reservations:</h3>
+    <ul>
+        {% for reservation in reservations %}
+        <li>{{ reservation.start_date }} - {{ reservation.end_date }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 {% endblock %}
