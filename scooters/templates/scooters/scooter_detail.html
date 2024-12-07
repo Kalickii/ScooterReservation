@@ -48,15 +48,15 @@
         {% endif %}
     </ul>
     <div class="button-container">
+        {% if user.is_authenticated %}
         <p>
-              <a href=
-                 {% if user.is_authenticated %}
-                        "{% url 'reservations-create' scooter_id=scooter.id %}"
-                 {% else %}
-        {#     REDIRECT TO LOGIN SITE         #}
-                 {% endif %}
-              class="btn book-btn">Book</a>
+              <a href="{% url 'reservations-create' scooter_id=scooter.id %}" class="btn book-btn">Book</a>
         </p>
+                 {% else %}
+        <p>
+              <a href="{% url 'account_login' %}" class="btn book-btn">Book</a>
+        </p>
+        {% endif %}
       {% if user.is_superuser %}
         <a href="{% url 'scooter-update' scooter_id=scooter.id %}" class="btn edit-btn">Edit</a>
           <form method="post">

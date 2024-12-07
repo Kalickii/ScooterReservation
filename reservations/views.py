@@ -1,4 +1,5 @@
 import stripe
+from datetime import datetime
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404
 from django.shortcuts import redirect, get_object_or_404, render
@@ -10,7 +11,7 @@ from django.conf import settings
 from reservations.forms import ReservationCreateForm, ReservationUpdateForm
 from reservations.models import Reservation
 from scooters.models import Scooter
-from users.models import UserProfile
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -18,7 +19,18 @@ class ReservationListView(UserPassesTestMixin, ListView):
     model = Reservation
     template_name = 'reservations/reservation_list.html'
     context_object_name = 'reservations'
-    queryset = Reservation.objects.all().order_by('start_date')
+    queryset = Reservation.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        incoming_reservations = Reservation.objects.filter(start_date__gt=datetime.today()).order_by('start_date')
+        past_reservations = Reservation.objects.filter(start_date__lte=datetime.today(), payment_status=True).order_by('start_date')
+        context.update({
+                'incoming_reservations': incoming_reservations,
+                'past_reservations': past_reservations
+                        })
+        return context
+
 
     def test_func(self):
         return self.request.user.is_staff
@@ -65,6 +77,13 @@ class ReservationCreateView(UserPassesTestMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs.update({'scooter_id': self.kwargs['scooter_id']})
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        scooter = Scooter.objects.get(pk=self.kwargs['scooter_id'])
+        reservations = Reservation.objects.filter(scooter=scooter, end_date__gt=datetime.today(), payment_status=True).order_by('start_date')
+        context.update({'reservations': reservations})
+        return context
 
     def get_success_url(self):
         return reverse('reservations-detail', kwargs={'reservation_id': self.object.id})
