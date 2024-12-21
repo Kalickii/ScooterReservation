@@ -12,7 +12,3 @@ class Reservation(models.Model):
     payment_status = models.BooleanField(default=False)
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     total_price = models.IntegerField(null=True, blank=True)
-
-    def calculate_price(self):
-        self.total_price = self.scooter.deposit_amount
-        self.save()

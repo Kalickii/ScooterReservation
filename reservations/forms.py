@@ -29,25 +29,13 @@ class ReservationCreateForm(forms.ModelForm):
 
     def clean(self):
         """
-        Validation - checking if start date is not equal to end date, or after end_date,
-        - checking if there is no previous reservation for given dates for current scooter
+        Validation - checking if start date is not equal to end date, or after end_date
         """
         cleaned_data = super().clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         if start_date and end_date and (start_date >= end_date):
             raise ValidationError(_('Start date must be before end date'))
-
-        current_delta = end_date - start_date
-        current_period = [(start_date + timedelta(days=i)) for i in range(0, current_delta.days + 1)]
-
-        for reservation in Reservation.objects.filter(scooter=Scooter.objects.get(id=self.scooter_id), payment_status=True):
-            delta = reservation.end_date - reservation.start_date
-            period = [(reservation.start_date + timedelta(days=i)) for i in range(0, delta.days + 1)]
-
-            for day in current_period:
-                if day in period:
-                    raise ValidationError(_('There is a reservation somewhere in this period'))
         return cleaned_data
 
 

@@ -98,7 +98,8 @@ def test_reservation_list_view_data(client, staff_user, superuser_user, reservat
     url = reverse('reservations-list')
     client.force_login(staff_user)
     response = client.get(url)
-    assert list(response.context['reservations']) == list(Reservation.objects.all().order_by('start_date'))
+    assert list(response.context['incoming_reservations']) == list(Reservation.objects.filter(start_date__gt=date.today()).order_by('start_date'))
+    assert list(response.context['past_reservations']) == list(Reservation.objects.filter(start_date__lte=date.today(), payment_status=True).order_by('start_date'))
 
 
 

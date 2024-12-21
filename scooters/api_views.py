@@ -1,3 +1,4 @@
+from pytest_django.fixtures import client
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 

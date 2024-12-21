@@ -1,16 +1,19 @@
-import stripe
 from datetime import datetime
+
+import stripe
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
-
 from django.conf import settings
+
 from reservations.forms import ReservationCreateForm, ReservationUpdateForm
 from reservations.models import Reservation
 from scooters.models import Scooter
+from gettext import gettext as _
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -67,11 +70,26 @@ class ReservationCreateView(UserPassesTestMixin, CreateView):
     form_class = ReservationCreateForm
 
     def form_valid(self, form):
-        scooter = Scooter.objects.get(pk=self.kwargs['scooter_id'])
-        form.instance.scooter = scooter
-        form.instance.userprofile = self.request.user.userprofile
-        form.instance.total_price = scooter.deposit_amount
-        return super().form_valid(form)
+        scooter_id = self.kwargs['scooter_id']
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+
+        with transaction.atomic():
+            scooter = Scooter.objects.select_for_update().get(id=scooter_id)
+
+            conflicting_reservations = Reservation.objects.filter(
+                scooter=scooter,
+                start_date__lte=end_date,
+                end_date__gte=start_date
+            )
+
+            if conflicting_reservations.exists():
+                form.add_error(None, _('This scooter already has a reservation somewhere in that period'))
+                return self.form_invalid(form)
+
+            form.instance.scooter = scooter
+            form.instance.userprofile = self.request.user.userprofile
+            return super().form_valid(form)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
