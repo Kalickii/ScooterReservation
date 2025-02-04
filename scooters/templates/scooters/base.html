@@ -8,10 +8,10 @@
             </head>
             <body>
                 <ul class="navbar">
-                  <li><a href="">{% trans 'Home Page' %}</a></li>
+                  <!-- <li><a href="">{% trans 'Home Page' %}</a></li> -->
                   <li><a href="{% url 'scooter-list' %}">{% trans 'Scooter Offer' %}</a></li>
-                  <li><a href="">{% trans 'About us' %}</a></li>
-                  <li><a href="">{% trans 'Contact' %}</a></li>
+                  <!-- <li><a href="">{% trans 'About us' %}</a></li> -->
+                  <!-- <li><a href="">{% trans 'Contact' %}</a></li> -->
                 {% if user.is_superuser %}
                   <li><a href="{% url 'reservations-list' %}">{% trans 'Reservations' %}</a></li>
                 {% endif %}
