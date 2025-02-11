@@ -1,7 +1,8 @@
 {% extends 'scooters/base.html' %}
 {% block content %}
     <h1>Incoming Reservations:</h1>
-     <table>
+    {% if incoming_reservations %} 
+    <table>
      <tr>
         <th>Date:</th>
         <th>User:</th>
@@ -34,7 +35,9 @@
             </tr>
         {% endfor %}
      </table>
+     {% endif %}
 
+    {% if past_reservations %}
      <h1>Reservations History:</h1>
      <table>
      <tr>
@@ -58,4 +61,5 @@
             </tr>
         {% endfor %}
      </table>
+     {% endif %}
 {% endblock %}
