@@ -1,6 +1,9 @@
 {% extends 'scooters/base.html' %}
 {% block content %}
     <h1>{{ reservation.scooter }} Reservation Details:</h1>
+        {% if not reservation.payment_status %}
+        <p>You have 3 minutes to confirm the payment</p>
+        {% endif %}
         <ul>
             <li>
                 Date: {{ reservation.start_date }} - {{ reservation.end_date }}

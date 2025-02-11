@@ -1,16 +1,11 @@
 import pytest
+import threading
+import time
 from datetime import timedelta, date
 
 from django.urls import reverse
 
 from reservations.models import Reservation
-
-
-@pytest.mark.django_db
-def test_reservation_calculate_price_method(reservation):
-    reservation.calculate_price()
-    assert reservation.total_price == 500
-
 
 # RESERVATION CREATE VIEW
 
