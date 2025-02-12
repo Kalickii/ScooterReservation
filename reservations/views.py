@@ -155,7 +155,7 @@ class CreateCheckoutSessionView(View):
             success_url=f'http://127.0.0.1:8000/reservations/success/?reservation_id={reservation_id}',
             cancel_url=f'http://127.0.0.1:8000/reservations/cancel/?reservation_id={reservation_id}',
         )
-        reservation.stripe_payment_intent_id = checkout_session.payment_intent
+        reservation.stripe_payment_intent_id = checkout_session.id
         reservation.save()
         return redirect(checkout_session.url)
 
