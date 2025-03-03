@@ -1,13 +1,15 @@
 from datetime import datetime
+import time
 
 import stripe
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db import transaction
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 
 from reservations.forms import ReservationCreateForm, ReservationUpdateForm
@@ -84,7 +86,7 @@ class ReservationCreateView(UserPassesTestMixin, CreateView):
             )
 
             if conflicting_reservations.exists():
-                form.add_error(None, _('This scooter already has a reservation somewhere in that period'))
+                form.add_error(None, _('This scooter already has a reservation somewhere in that period or someone is currently booking'))
                 return self.form_invalid(form)
 
             form.instance.scooter = scooter
@@ -134,37 +136,87 @@ class ReservationDetailView(UserPassesTestMixin, DetailView):
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         reservation_id = self.kwargs['reservation_id']
-        reservation = get_object_or_404(Reservation, pk=reservation_id)
-        image_url = request.build_absolute_uri(reservation.scooter.image.url)
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'pln',
-                        'product_data': {
-                            'name': f'{reservation.scooter} Reservation',
-                            'images': [image_url],
+        reservation = Reservation.objects.filter(pk=reservation_id).first()
+        if not reservation:
+            return redirect("scooter-list")
+       
+        # Prevent creating multiple checkout sessions with different payment_intent when the user 
+        # navigates back using the browser's back button and clicks "Pay" again.
+        if reservation.stripe_payment_intent_id:
+            session = stripe.checkout.Session.retrieve(reservation.stripe_payment_intent_id)
+            if session.status == 'open':
+                return redirect(session.url)
+            elif session.status == 'complete':
+                return redirect(reverse("reservations-detail", kwargs={'reservation_id': reservation.pk}))
+        
+        if not reservation.payment_status:
+            image_url = request.build_absolute_uri(reservation.scooter.image.url)
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'pln',
+                            'product_data': {
+                                'name': f'{reservation.scooter} Reservation',
+                                'images': [image_url],
+                            },
+                            'unit_amount': int(reservation.total_price * 100),
                         },
-                        'unit_amount': int(reservation.total_price * 100),
-                    },
-                    'quantity': 1,
-            },
-            ],
-            mode='payment',
-            success_url=f'http://127.0.0.1:8000/reservations/success/?reservation_id={reservation_id}',
-            cancel_url=f'http://127.0.0.1:8000/reservations/cancel/?reservation_id={reservation_id}',
-        )
-        reservation.stripe_payment_intent_id = checkout_session.id
+                        'quantity': 1,
+                },
+                ],
+                mode='payment',
+                success_url=f'http://127.0.0.1:8000/reservations/success/?reservation_id={reservation_id}',
+                cancel_url=f'http://127.0.0.1:8000/reservations/cancel/?reservation_id={reservation_id}',
+                expires_at= int(time.time() + 1800)
+            )
+            reservation.stripe_payment_intent_id = checkout_session.payment_intent
+            reservation.save()
+            return redirect(checkout_session.url)
+        return redirect(reverse("reservations-detail", kwargs={'reservation_id': reservation.pk}))
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    endpoint_secret = settings.WEBHOOK_ENDPOINT_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except ValueError:
+        return HttpResponse(status=400)
+    
+    except stripe.error.SignatureVerificationError:
+        return HttpResponse(status=400)
+    
+    payment_intent_id = event.data.object.get('payment_intent')
+    reservation = Reservation.objects.filter(stripe_payment_intent_id=payment_intent_id, payment_status=False).first()
+
+    if not reservation:
+        return HttpResponse(status=200)
+    
+    if event['type'] == 'payment_intent.succeeded':
+        reservation.payment_status = True
         reservation.save()
-        return redirect(checkout_session.url)
+    
+    elif event['type'] == 'checkout.session.expired':
+        try:
+            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+            if payment_intent.status not in ['succeeded', 'canceled']:
+                stripe.PaymentIntent.cancel(payment_intent)
+
+        except stripe.error.InvalidRequestError:
+            print("Payment intent not found. Deleting reservation.")
+
+        reservation.delete()
+
+    return HttpResponse(status=200)
 
 
 class PaymentSuccessView(UserPassesTestMixin, View):
     def get(self, request, *args, **kwargs):
-        reservation = get_object_or_404(Reservation, pk=self.request.GET.get('reservation_id'))
-        reservation.payment_status = True
-        reservation.save()
         return render(request, 'reservations/payment_success.html')
 
     def test_func(self):
@@ -177,7 +229,7 @@ class PaymentSuccessView(UserPassesTestMixin, View):
 
 class PaymentCancelView(UserPassesTestMixin, View):
     def get(self, request, *args, **kwargs):
-        reservation = Reservation.objects.get(pk=request.GET.get('reservation_id'))
+        reservation = get_object_or_404(Reservation, pk=request.GET.get('reservation_id'))
         reservation.delete()
         return render(request, 'reservations/payment_cancel.html')
 

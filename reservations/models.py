@@ -21,27 +21,25 @@ class Reservation(models.Model):
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     total_price = models.IntegerField(null=True, blank=True)
 
-    # def delete_after_delay(self):
-    #     def check_and_delete():
-    #         print('started countdown')
-    #         time.sleep(10)
-    #         reservation = Reservation.objects.filter(pk=self.pk, payment_status=False).first()
-    #         if reservation:
-    #             if reservation.stripe_payment_intent_id:
-    #                 session = stripe.checkout.Session.retrieve(reservation.stripe_payment_intent_id)
-    #                 if session.payment_status == "open":
-    #                     print(f"Rezerwacja {reservation.pk} - płatność w toku, ponowne sprawdzenie za 3 min")
-    #                     threading.Thread(target=check_and_delete, daemon=True).start()
-    #                     return
-    #                 if session.payment_status == "paid":
-    #                     print(f"Rezerwacja {reservation.pk} - zapłacona, nie usuwam")
-    #                     return
-    #             print('rezerwacja usunięta')
-    #             reservation.delete()
+    def delete_after_delay(self):
+        '''
+        Function for deleting reservation if user does not open checkout session to do the payment in 3 minutes after creating reservation.
+        If user open checkout session, everything else is handled by webhooks
+        '''
+        def check_and_delete():
+            time.sleep(180)
+            reservation = Reservation.objects.filter(pk=self.pk, payment_status=False).first()
+            if reservation:
+                if reservation.stripe_payment_intent_id:
+                    session = stripe.checkout.Session.retrieve(reservation.stripe_payment_intent_id)
+                    if session.status == "open":
+                        return
+                reservation.delete()
 
-    #     threading.Thread(target=check_and_delete, daemon=True).start()
+        threading.Thread(target=check_and_delete, daemon=True).start()
 
     def save(self, *args, **kwargs):
         self.total_price = self.scooter.deposit_amount
         super().save(*args, **kwargs)
-        self.delete_after_delay()
+        if not self.stripe_payment_intent_id:
+            self.delete_after_delay()

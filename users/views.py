@@ -22,7 +22,7 @@ class UserDashboardView(UserPassesTestMixin, DetailView):
         user = self.get_object()
         context = super().get_context_data(**kwargs)
         if Reservation.objects.filter(userprofile=user.userprofile).order_by('start_date').exists():
-            reservations = Reservation.objects.filter(userprofile=user.userprofile).order_by('start_date')
+            reservations = Reservation.objects.filter(userprofile=user.userprofile).order_by('start_date').reverse()
             next_reservation = reservations.first()
             context['next_reservation'] = next_reservation
             context['reservations'] = reservations
