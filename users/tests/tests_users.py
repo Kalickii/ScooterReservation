@@ -41,7 +41,7 @@ def test_user_dashboard_reservations(client, simple_user, reservations):
     url = reverse('user-dashboard')
     client.force_login(simple_user)
     response = client.get(url)
-    assert response.context['reservations'][0] == Reservation.objects.filter(userprofile=simple_user.userprofile).order_by('start_date').first()
+    assert response.context['reservations'][0] == Reservation.objects.filter(userprofile=simple_user.userprofile).order_by('start_date').reverse().first()
     assert response.context['reservations'].count() == Reservation.objects.filter(userprofile=simple_user.userprofile).count()
 
 

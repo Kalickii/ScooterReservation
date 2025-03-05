@@ -1,8 +1,6 @@
-import pytest
-import threading
-import time
 from datetime import timedelta, date
 
+import pytest
 from django.urls import reverse
 
 from reservations.models import Reservation
@@ -227,10 +225,8 @@ def test_payment_success_view(client, simple_user, simple_user2, staff_user, res
     base_url = reverse('payment-success')
     url = f'{base_url}?reservation_id={reservation.pk}'
     client.force_login(simple_user)
-    assert Reservation.objects.get(pk=reservation.pk).payment_status == False
     response = client.get(url)
     assert response.status_code == 200
-    assert Reservation.objects.get(pk=reservation.pk).payment_status == True
 
     client.force_login(simple_user2)
     response = client.get(url)

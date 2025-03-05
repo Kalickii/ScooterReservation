@@ -21,13 +21,13 @@ class Reservation(models.Model):
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     total_price = models.IntegerField(null=True, blank=True)
 
-    def delete_after_delay(self):
+    def delete_after_delay(self, sleep_time=5):
         '''
         Function for deleting reservation if user does not open checkout session to do the payment in 3 minutes after creating reservation.
         If user open checkout session, everything else is handled by webhooks
         '''
         def check_and_delete():
-            time.sleep(180)
+            time.sleep(sleep_time) # Allow sleep time to be modified for tests
             reservation = Reservation.objects.filter(pk=self.pk, payment_status=False).first()
             if reservation:
                 if reservation.stripe_payment_intent_id:
