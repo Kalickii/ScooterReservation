@@ -3,8 +3,6 @@ import threading
 
 import stripe
 from django.conf import settings
-from django.shortcuts import redirect
-from django.urls import reverse
 from django.db import models
 
 from scooters.models import Scooter
@@ -19,19 +17,20 @@ class Reservation(models.Model):
     end_date = models.DateField()
     payment_status = models.BooleanField(default=False)
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_checkout_id = models.CharField(max_length=255, blank=True, null=True)
     total_price = models.IntegerField(null=True, blank=True)
 
-    def delete_after_delay(self, sleep_time=5):
+    def delete_after_delay(self):
         '''
         Function for deleting reservation if user does not open checkout session to do the payment in 3 minutes after creating reservation.
         If user open checkout session, everything else is handled by webhooks
         '''
         def check_and_delete():
-            time.sleep(sleep_time) # Allow sleep time to be modified for tests
+            time.sleep(180)
             reservation = Reservation.objects.filter(pk=self.pk, payment_status=False).first()
             if reservation:
-                if reservation.stripe_payment_intent_id:
-                    session = stripe.checkout.Session.retrieve(reservation.stripe_payment_intent_id)
+                if reservation.stripe_checkout_id:
+                    session = stripe.checkout.Session.retrieve(reservation.stripe_checkout_id)
                     if session.status == "open":
                         return
                 reservation.delete()
@@ -41,5 +40,5 @@ class Reservation(models.Model):
     def save(self, *args, **kwargs):
         self.total_price = self.scooter.deposit_amount
         super().save(*args, **kwargs)
-        if not self.stripe_payment_intent_id:
+        if not self.stripe_checkout_id:
             self.delete_after_delay()

@@ -172,6 +172,7 @@ class CreateCheckoutSessionView(View):
                 expires_at= int(time.time() + 1800)
             )
             reservation.stripe_payment_intent_id = checkout_session.payment_intent
+            reservation.stripe_checkout_id = checkout_session.id
             reservation.save()
             return redirect(checkout_session.url)
         return redirect(reverse("reservations-detail", kwargs={'reservation_id': reservation.pk}))
